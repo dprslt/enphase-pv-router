@@ -5,12 +5,40 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Debug Main (TypeScript)",
             "type": "node",
             "request": "launch",
-            "name": "Debug Current File",
-            "program": "${file}",
+            "program": "${workspaceFolder}/src/index.ts",
+            "args": [],
+            "runtimeArgs": [
+                "--import",
+                "tsx/esm"
+            ],
+            "env": {
+                "NODE_ENV": "development"
+            },
             "console": "integratedTerminal",
-            "runtimeExecutable": "./node_modules/.bin/ts-node-esm"
+            "sourceMaps": true,
+            "restart": true,
+            "protocol": "inspector",
+            "outFiles": [
+                "${workspaceFolder}/build/**/*.js"
+            ]
+        },
+        {
+            "name": "Debug Main (Compiled JS)",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/src/index.js",
+            "args": [],
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "console": "integratedTerminal",
+            "sourceMaps": true,
+            "restart": true,
+            "protocol": "inspector",
+            "preLaunchTask": "npm: build"
         }
     ]
 }
