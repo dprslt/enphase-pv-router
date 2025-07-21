@@ -61,7 +61,9 @@ export class Router {
     }
 
     async adjustDimmer(gridState: GridState) {
-        if (!gridState.isOverflowOverThreesold()) {
+        // If their is no overflow but the dimmer is active (ie not set at 0) we may need to cut the load
+
+        if (!gridState.isOverflowOverThreesold() && gridState.isDimmerInactive()) {
             gridState.logNoProd();
             return;
         }

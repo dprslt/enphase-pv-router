@@ -10,7 +10,7 @@ import moment from 'moment';
 import { MomentClock } from './ports-adapters/clock/momentClock.js';
 dotenv.config();
 
-let shouldStop = false;
+const shouldStop = false;
 
 const config = buildConfigFromEnv();
 

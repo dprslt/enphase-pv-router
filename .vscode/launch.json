@@ -21,24 +21,22 @@
             "sourceMaps": true,
             "restart": true,
             "protocol": "inspector",
-            "outFiles": [
-                "${workspaceFolder}/build/**/*.js"
-            ]
+           
         },
-        {
-            "name": "Debug Main (Compiled JS)",
-            "type": "node",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/src/index.js",
-            "args": [],
-            "env": {
-                "NODE_ENV": "development"
-            },
-            "console": "integratedTerminal",
-            "sourceMaps": true,
-            "restart": true,
-            "protocol": "inspector",
-            "preLaunchTask": "npm: build"
-        }
+        // {
+        //     "name": "Debug Main (Compiled JS)",
+        //     "type": "node",
+        //     "request": "launch",
+        //     "program": "${workspaceFolder}/build/src/index.js",
+        //     "args": [],
+        //     "env": {
+        //         "NODE_ENV": "development"
+        //     },
+        //     "console": "integratedTerminal",
+        //     "sourceMaps": true,
+        //     "restart": true,
+        //     "protocol": "inspector",
+        //     "preLaunchTask": "npm: build"
+        // }
     ]
 }

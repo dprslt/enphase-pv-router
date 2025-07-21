@@ -98,6 +98,6 @@ export class GridState {
     }
 
     logWaterOverTarget() {
-        console.log(...this.genericLogItems(), '[TEMP_OVER_TARGET]');
+        console.log(...this.genericLogItems(), '[TEMP_OVER_TARGET]', this.maxTemp, '°C');
     }
 }
