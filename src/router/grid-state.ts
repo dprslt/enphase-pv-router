@@ -48,7 +48,8 @@ export class GridState {
         if (this.waterTemp == undefined) {
             return false;
         }
-        return this.waterTemp > (this.maxTemp ?? 75);
+        // We use >= because the value coming from the dimmer is rounded
+        return this.waterTemp >= (this.maxTemp ?? 75);
     }
 
     private genericLogItems(): Array<string | number | undefined> {
