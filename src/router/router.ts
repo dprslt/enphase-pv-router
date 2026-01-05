@@ -53,43 +53,40 @@ export class Router {
 
         if (this.ports.clock.isDay()) {
             // It's the day let's see if we can route some power from the pvs
-            if (gridState.isOverflowOverThreesold() || !gridState.isDimmerInactive()) {
-                const neededChange = (gridState.overflow / this.loadConfig.loadPower) * 100;
-                const newPercValue = gridState.dimmerSetting + neededChange;
-                // If the value is < 0 we just need to cut the load
-                const flooredValue = Math.max(Math.min(Math.floor(newPercValue), this.loadConfig.maxPower), 0);
-                await this.ports.dimmer.modulePower(flooredValue);
-                // TODO add these sinfo tho the logger
-                gridState.logDimmer(neededChange, flooredValue, Math.round((flooredValue / 100) * this.loadConfig.loadPower));
-            } else {
-                // TODO replace this by a logger
-                gridState.logNoProd();
-            }
+            await this.adjustDimmer(gridState);
         }
-
-        /* THE NIGHT MODE IS NOW HANDLED DIRECTLY BY THE DIMMER
-        
-        else {
-            // Night time, it's time to control water temp
-            if (gridState.isWaterUnderLowRange()) {
-                // Stay far from 50 to avoid harmonics
-                // TODO improve this to handle a relay with a new function in the dimmer
-                if (gridState.dimmerSetting < this.loadConfig.maxPower) {
-                    // TODO this code must change to handle a relay during the night
-                    await this.ports.dimmer.modulePower(this.loadConfig.maxPower);
-                }
-                gridState.logNight(true);
-            } else if (gridState.isWaterOverTarget() && gridState.isDimmerActive()) {
-                await this.ports.dimmer.modulePower(0);
-                gridState.logNight(false);
-            } else {
-                gridState.logNight(false);
-            }
-        }
-        */
 
         // Prevent a failing connection to the MQTT broker to block the thread
         await Promise.race([sendToHaPromise, new Promise((resolve) => setTimeout(resolve, 2000))]);
+    }
+
+    async adjustDimmer(gridState: GridState) {
+        // If their is no overflow but the dimmer is active (ie not set at 0) we may need to cut the load
+
+        if (!gridState.isOverflowOverThreesold() && gridState.isDimmerInactive()) {
+            gridState.logNoProd();
+            return;
+        }
+
+        if (!gridState.isDimmerDimmable) {
+            gridState.logDimmerNotListening();
+            return;
+        }
+
+        if (gridState.isWaterOverTarget()) {
+            await this.ports.dimmer.modulePower(0);
+            gridState.logWaterOverTarget();
+            return;
+        }
+
+        // We need to adjust the load
+        const neededChange = (gridState.overflow / this.loadConfig.loadPower) * 100;
+        const newPercValue = gridState.dimmerSetting + neededChange;
+        // If the value is < 0 we just need to cut the load
+        const flooredValue = Math.max(Math.min(Math.floor(newPercValue), this.loadConfig.maxPower), 0);
+        await this.ports.dimmer.modulePower(flooredValue);
+        // TODO add these sinfo tho the logger
+        gridState.logDimmer(neededChange, flooredValue, Math.round((flooredValue / 100) * this.loadConfig.loadPower));
     }
 
     async initialize() {

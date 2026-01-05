@@ -1,6 +1,8 @@
 export type DimmerValue = {
     perc?: number;
     temp?: number;
+    isNotListening?: boolean;
+    maxTemp?: number;
 };
 
 export interface Dimmer {

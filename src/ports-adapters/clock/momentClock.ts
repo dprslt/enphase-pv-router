@@ -6,7 +6,7 @@ export class MomentClock implements Clock {
     // https://sunrise-sunset.org/api
     isNight(): boolean {
         // TODO improve support timezone to work with real hours
-        return moment().hours() < 7;
+        return moment().hours() < 7 || moment().hours() > 21;
     }
 
     isDay(): boolean {

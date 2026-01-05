@@ -9,12 +9,16 @@ export class GridState {
     dimmerSetting: number;
     waterTemp?: number;
     timestamp: Moment;
+    isDimmerDimmable: boolean;
+    maxTemp?: number;
 
     constructor(private meters: MetersValues, private dimmer: DimmerValue, private loadConfig: LoadConfig) {
         this.overflow = -meters.consumption.instantaneousDemand;
         this.netComsuption = meters.consumption.instantaneousDemand + meters.production.instantaneousDemand;
         this.dimmerSetting = dimmer.perc || 0;
         this.waterTemp = dimmer.temp;
+        this.isDimmerDimmable = dimmer.isNotListening ?? true;
+        this.maxTemp = dimmer.maxTemp;
         this.timestamp = moment();
     }
 
@@ -44,7 +48,8 @@ export class GridState {
         if (this.waterTemp == undefined) {
             return false;
         }
-        return this.waterTemp > 55;
+        // We use >= because the value coming from the dimmer is rounded
+        return this.waterTemp >= (this.maxTemp ?? 75);
     }
 
     private genericLogItems(): Array<string | number | undefined> {
@@ -87,5 +92,13 @@ export class GridState {
 
     logNight(heating: boolean) {
         console.log(...this.genericLogItems(), '[NIGHT-HEATING]', heating ? 'yes' : 'no');
+    }
+
+    logDimmerNotListening() {
+        console.log(...this.genericLogItems(), '[DIMMER_IN_FORCED_MODE]');
+    }
+
+    logWaterOverTarget() {
+        console.log(...this.genericLogItems(), '[TEMP_OVER_TARGET]', this.maxTemp, '°C');
     }
 }
