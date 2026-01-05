@@ -1,5 +1,5 @@
 import { BrokerMQTT } from './ports-adapters/broker/broker-mqtt.js';
-import { buildConfigFromEnv } from './config.js';
+import { loadConfig } from './config.js';
 import { WifiDimmer } from './ports-adapters/dimmer/wifi-dimmer.js';
 import { Router } from './router/router.js';
 import { sleep } from './utils/sleep.js';
@@ -12,7 +12,7 @@ dotenv.config();
 
 const shouldStop = false;
 
-const config = buildConfigFromEnv();
+const config = await loadConfig();
 
 const mqttAdapter = new BrokerMQTT(config.mqttHost, config.mqttUsername, config.mqttPassword);
 const wifiDimmer = new WifiDimmer(config.dimmerHostname);
